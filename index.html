@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Practice Hube</title>
+<style>
+  * { box-sizing: border-box; font-family: Arial, sans-serif; }
+  body { position: relative; isolation: isolate; margin: 0; background: linear-gradient(135deg, #070b18 0%, #111329 42%, #0b2530 72%, #190f29 100%); background-size: 300% 300%; animation: bgMove 24s ease infinite; color: #e2e8f0; min-height: 100vh; }
+  body::before, body::after { position: fixed; z-index: 0; pointer-events: none; content: ''; }
+  body::before { inset: -120px; opacity: .46; background-image: radial-gradient(circle at 24px 36px, #67e8f9 0 1px, transparent 1.7px), radial-gradient(circle at 96px 118px, #fff 0 1.2px, transparent 1.9px), radial-gradient(circle at 164px 70px, #f0abfc 0 .8px, transparent 1.5px); background-size: 190px 170px, 250px 220px, 310px 280px; animation: starDrift 100s linear infinite, starTwinkle 7s ease-in-out infinite alternate; }
+  body::after { top: 16%; left: -180px; width: 150px; height: 2px; opacity: 0; border-radius: 50%; background: linear-gradient(90deg, transparent, rgba(103,232,249,.16), rgba(224,242,254,.95), transparent); box-shadow: 0 0 8px rgba(103,232,249,.45); transform: rotate(28deg); animation: shootingStar 18s ease-in-out infinite; animation-delay: -6s; }
+  header, nav, .student-mode-nav, .container { position: relative; z-index: 1; }
+  @keyframes starDrift { to { background-position: 380px 340px, -500px 440px, 620px -560px; } }
+  @keyframes starTwinkle { from { opacity: .18; } to { opacity: .42; } }
+  @keyframes shootingStar { 0%, 74% { opacity: 0; transform: translate(0, 0) rotate(28deg); } 77% { opacity: .9; } 86% { opacity: 0; transform: translate(115vw, 42vh) rotate(28deg); } 100% { opacity: 0; transform: translate(115vw, 42vh) rotate(28deg); } }
+  @keyframes bgMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes slideIn { from { opacity: 0; transform: translateX(-30px); } to { opacity: 1; transform: translateX(0); } }
+  @keyframes pop { 0% { transform: scale(.6); opacity: 0; } 70% { transform: scale(1.1); } 100% { transform: scale(1); opacity: 1; } }
+  @keyframes floaty { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+  @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+  @keyframes fall { to { transform: translateY(110vh) rotate(720deg); opacity: .9; } }
+  header { background: linear-gradient(100deg, #10162c, #0f4654 54%, #30203f); background-size: 200% 200%; animation: bgMove 12s ease infinite; color: #f8fafc; padding: 22px 16px; text-align: center; font-size: 26px; font-weight: bold; letter-spacing: .5px; text-shadow: 0 2px 8px rgba(0,0,0,.4); box-shadow: 0 4px 20px rgba(34,211,238,.18); }
+  header span { display: inline-block; animation: floaty 2.5s ease-in-out infinite; }
+  nav { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; padding: 12px; background: rgba(8,13,28,.88); border-bottom: 1px solid rgba(148,163,184,.2); }
+  nav button { padding: 10px 22px; border: 1px solid rgba(148,163,184,.2); border-radius: 8px; background: rgba(255,255,255,.08); color: #dbeafe; cursor: pointer; font-size: 15px; transition: transform .2s, box-shadow .2s, background .3s; }
+  nav button:hover { transform: translateY(-3px); box-shadow: 0 6px 12px rgba(0,0,0,.15); }
+  nav button.active { border-color: rgba(103,232,249,.65); background: linear-gradient(100deg, #0f766e, #155e75); color: #fff; box-shadow: 0 4px 16px rgba(34,211,238,.2); }
+  .student-mode-nav { display: flex; justify-content: center; gap: 4px; width: fit-content; max-width: calc(100% - 24px); margin: 14px auto 0; padding: 4px; border: 1px solid rgba(148,163,184,.25); border-radius: 8px; background: rgba(15,23,42,.82); }
+  .student-mode-nav.hidden { display: none; }
+  .student-mode-nav button { flex: 1 1 180px; padding: 10px 16px; border: 0; border-radius: 6px; background: transparent; color: #cbd5e1; font-size: 15px; cursor: pointer; }
+  .student-mode-nav button.active { background: #0f766e; color: #fff; }
+  .container { width: 100%; max-width: 800px; margin: 20px auto; padding: 0 12px; }
+  .card { border: 1px solid rgba(148,163,184,.24); border-radius: 12px; padding: 22px; margin-bottom: 16px; background: rgba(13,22,40,.84); color: #e2e8f0; box-shadow: 0 12px 30px rgba(0,0,0,.24); backdrop-filter: blur(8px); animation: fadeUp .5s ease both; transition: transform .25s, box-shadow .25s; }
+  .card:hover { transform: translateY(-3px); box-shadow: 0 14px 34px rgba(0,0,0,.32), 0 0 18px rgba(34,211,238,.08); }
+  h2, h3 { margin-top: 0; }
+  label { display: block; margin: 10px 0 4px; font-weight: bold; font-size: 14px; }
+  input[type=text], input[type=number], select, textarea { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; background: #f8fafc; color: #0f172a; font-size: 15px; }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .row > div { flex: 1; min-width: 200px; }
+  button.btn { padding: 12px 22px; border: none; border-radius: 30px; cursor: pointer; font-size: 15px; font-weight: bold; color: #fff; background: linear-gradient(90deg, #6366f1, #8b5cf6); margin-top: 12px; margin-right: 6px; transition: transform .2s, box-shadow .2s; box-shadow: 0 4px 10px rgba(99,102,241,.35); }
+  button.btn:hover { transform: translateY(-3px) scale(1.04); box-shadow: 0 8px 18px rgba(99,102,241,.45); }
+  button.btn:active { transform: scale(.95); }
+  button.green { background: linear-gradient(90deg, #16a34a, #22c55e) !important; }
+  button.red { background: linear-gradient(90deg, #dc2626, #f43f5e) !important; }
+  button.gray { background: linear-gradient(90deg, #6b7280, #94a3b8) !important; }
+  .q-item { border: 1px solid rgba(148,163,184,.25); border-radius: 8px; padding: 10px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  .q-item small { color: #6ee7b7; }
+  .timer-bar { height: 10px; background: #334155; border-radius: 6px; overflow: hidden; margin: 10px 0; }
+  .timer-fill { height: 100%; background: #16a34a; width: 100%; transition: width 1s linear, background .3s; }
+  #quizBox { position: relative; }
+  .timer-text { position: absolute; top: 14px; right: 14px; width: 64px; height: 64px; border-radius: 50%; background: #16a34a; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 26px; box-shadow: 0 2px 6px rgba(0,0,0,.25); transition: background .3s; }
+  .timer-text.warn { background: #f59e0b; }
+  .timer-text.danger { background: #dc2626; animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.12); } }
+  #questionText { padding-right: 80px; }
+  .progress { padding-right: 80px; }
+  .option { display: block; padding: 14px; margin: 10px 0; border: 1px solid #475569; border-radius: 8px; cursor: pointer; background: rgba(15,23,42,.88); color: #f8fafc; width: 100%; text-align: left; font-size: 16px; animation: slideIn .4s ease both; transition: transform .2s, border-color .2s, background .2s, box-shadow .2s; }
+  .option:nth-child(2) { animation-delay: .08s; } .option:nth-child(3) { animation-delay: .16s; } .option:nth-child(4) { animation-delay: .24s; }
+  .option:hover { border-color: #67e8f9; transform: translateX(6px); box-shadow: 0 4px 16px rgba(34,211,238,.16); }
+  .option.selected { border-color: #67e8f9; background: rgba(14,116,144,.55); transform: scale(1.01); animation: pop .3s ease; }
+  .correct { background: #dcfce7; border-color: #16a34a; color: #14532d; }
+  .wrong { background: #fee2e2; border-color: #dc2626; color: #7f1d1d; }
+  .hidden { display: none; }
+  .score { font-size: 56px; font-weight: bold; background: linear-gradient(90deg, #6366f1, #ec4899); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; text-align: center; animation: pop .7s ease both; }
+  .msg { text-align: center; font-size: 20px; margin: 6px 0 12px; animation: fadeUp .8s ease both; }
+  .confetti { position: fixed; top: -20px; width: 10px; height: 14px; z-index: 999; pointer-events: none; animation: fall 3s linear forwards; }
+  .timer-fill { box-shadow: 0 0 8px rgba(0,0,0,.2); }
+  .timer-bar { height: 12px; }
+  .progress { color: #cbd5e1; font-size: 14px; }
+  .article { font-size: 22px; line-height: 1.9; padding: 18px; background: #fffbeb; color: #1e293b; border-radius: 12px; border: 2px dashed #f59e0b; transition: filter .6s; }
+  .article.blur { filter: blur(9px); user-select: none; pointer-events: none; }
+  .rtimer { font-size: 40px; font-weight: bold; text-align: center; color: #6366f1; margin: 8px 0; }
+  .wbad { background: #fecaca; border-radius: 4px; padding: 0 3px; }
+  .wgood { background: #bbf7d0; border-radius: 4px; padding: 0 3px; }
+  .live-box { background: #f1f5f9; border-radius: 10px; padding: 10px; min-height: 40px; font-size: 15px; color: #475569; margin-top: 10px; }
+  .live-box[contenteditable="true"]:empty::before { content: attr(data-placeholder); color: #64748b; }
+  .badge { background: #16a34a; color: #fff; border-radius: 20px; padding: 2px 10px; font-size: 12px; margin-left: 6px; }
+  .q-item > div:first-child { min-width: 0; overflow-wrap: anywhere; }
+  .q-item > div:last-child { display: flex; flex-wrap: wrap; gap: 6px; }
+  .admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(132px, 1fr)); gap: 12px; }
+  .admin-tile { min-height: 128px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; border: 1px solid rgba(148,163,184,.32); border-radius: 8px; background: rgba(30,41,59,.8); color: #f1f5f9; font-size: 15px; font-weight: bold; cursor: pointer; transition: transform .2s, border-color .2s, box-shadow .2s; }
+  .admin-tile:hover { transform: translateY(-2px); border-color: #0f766e; box-shadow: 0 5px 14px rgba(15,118,110,.16); }
+  .admin-tile-icon { width: 52px; aspect-ratio: 1; display: grid; place-items: center; border-radius: 14px; background: #ccfbf1; font-size: 26px; }
+  .admin-tile:nth-child(2) .admin-tile-icon { background: #ffedd5; }
+  .admin-tile:nth-child(3) .admin-tile-icon { background: #dcfce7; }
+  .admin-tile:nth-child(4) .admin-tile-icon { background: #dbeafe; }
+  .admin-tile:nth-child(5) .admin-tile-icon { background: #ffe4e6; }
+  .admin-section-head { display: flex; margin-bottom: 12px; }
+  .section-back { padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 6px; background: #fff; color: #334155; font: inherit; cursor: pointer; }
+  .section-back:hover { background: #f1f5f9; }
+  #loginBox.login-panel { position: relative; width: min(100%, 470px); margin: clamp(24px, 7vh, 68px) auto; padding: 34px clamp(22px, 6vw, 42px); overflow: hidden; border: 1px solid #dbe4e8; border-radius: 12px; background: #fff; box-shadow: 0 18px 48px rgba(31,41,55,.16); }
+  #loginBox.login-panel::before { content: ''; position: absolute; inset: 0 0 auto; height: 5px; background: linear-gradient(90deg, #0f766e, #f59e0b); }
+  .login-emblem { width: 54px; aspect-ratio: 1; display: grid; place-items: center; margin-bottom: 20px; border-radius: 12px; background: #ccfbf1; font-size: 26px; }
+  .login-kicker { margin: 0 0 8px; color: #0f766e; font-size: 12px; font-weight: bold; }
+  #loginBox h2 { margin: 0 0 8px; font-size: 28px; }
+  .login-copy { margin: 0 0 24px; color: #64748b; line-height: 1.55; }
+  .login-field label { margin: 0 0 8px; }
+  .login-input-wrap { position: relative; }
+  .login-input-wrap span { position: absolute; top: 50%; left: 14px; transform: translateY(-50%); font-size: 18px; }
+  .login-input-wrap input { width: 100%; padding: 14px 14px 14px 44px; border: 1px solid #cbd5e1; border-radius: 8px; background: #fbfdfe; font-size: 16px; }
+  .login-input-wrap input:focus { border-color: #0f766e; outline: 3px solid rgba(15,118,110,.14); }
+  #loginBox .login-submit { width: 100%; margin: 18px 0 0; padding: 14px 18px; border-radius: 8px; background: #0f766e; box-shadow: 0 5px 12px rgba(15,118,110,.2); }
+  #loginBox .login-submit:hover { background: #115e59; box-shadow: 0 7px 16px rgba(15,118,110,.25); }
+  #loginMsg { margin: 18px 0 0; padding: 10px 12px; border-left: 3px solid #f59e0b; border-radius: 4px; background: #fffbeb; color: #475569; line-height: 1.5; }
+  .study-bot { position: fixed; right: 20px; bottom: 20px; z-index: 1000; }
+  .chat-launcher { width: 58px; aspect-ratio: 1; display: grid; place-items: center; border: 0; border-radius: 50%; background: #0f766e; color: #fff; font-size: 25px; cursor: pointer; box-shadow: 0 8px 22px rgba(15,118,110,.3); transition: transform .2s, background .2s; }
+  .chat-launcher:hover { transform: translateY(-2px); background: #115e59; }
+  .chat-panel { position: absolute; right: 0; bottom: 72px; width: min(380px, calc(100vw - 24px)); height: min(540px, calc(100dvh - 110px)); min-height: 360px; display: flex; flex-direction: column; overflow: hidden; border: 1px solid #d1d5db; border-radius: 12px; background: #fff; box-shadow: 0 18px 48px rgba(15,23,42,.22); }
+  .chat-panel.hidden { display: none; }
+  .chat-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 15px 16px; background: #134e4a; color: #fff; }
+  .chat-header h2 { margin: 0; font-size: 17px; }
+  .chat-header p { margin: 3px 0 0; color: #ccfbf1; font-size: 12px; }
+  .chat-close { width: 36px; aspect-ratio: 1; border: 0; border-radius: 6px; background: transparent; color: #fff; font-size: 24px; cursor: pointer; }
+  .chat-close:hover { background: rgba(255,255,255,.14); }
+  .chat-messages { flex: 1; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; padding: 15px; background: #f8fafc; }
+  .chat-message { max-width: 90%; margin: 0; padding: 10px 12px; border-radius: 10px; line-height: 1.5; overflow-wrap: anywhere; white-space: pre-wrap; }
+  .chat-message.bot { align-self: flex-start; border: 1px solid #e2e8f0; background: #fff; color: #334155; }
+  .chat-message.user { align-self: flex-end; background: #0f766e; color: #fff; }
+  .chat-suggestions { display: flex; flex-wrap: wrap; gap: 7px; }
+  .chat-suggestions button { padding: 7px 10px; border: 1px solid #99f6e4; border-radius: 6px; background: #f0fdfa; color: #115e59; font-size: 13px; cursor: pointer; }
+  .chat-suggestions button:hover { background: #ccfbf1; }
+  .chat-form { display: flex; gap: 8px; padding: 12px; border-top: 1px solid #e2e8f0; background: #fff; }
+  .chat-form input { flex: 1; min-width: 0; padding: 11px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 16px; }
+  .chat-send { width: 44px; flex: 0 0 44px; border: 0; border-radius: 6px; background: #0f766e; color: #fff; font-size: 20px; cursor: pointer; }
+  .chat-send:hover { background: #115e59; }
+  .calculator-backdrop { position: fixed; inset: 0; z-index: 1100; display: grid; place-items: center; padding: 12px; background: rgba(15,23,42,.025); }
+  .calculator-backdrop.hidden { display: none; }
+  .calculator-dialog { width: min(300px, 100%); padding: 14px; border: 1px solid rgba(148,163,184,.5); border-radius: 10px; background: rgba(255,255,255,.62); box-shadow: 0 12px 30px rgba(15,23,42,.12); backdrop-filter: blur(1px); }
+  .calculator-heading { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .calculator-heading h2 { margin: 0; font-size: 19px; }
+  .calculator-heading button { width: 38px; aspect-ratio: 1; border: 0; border-radius: 6px; background: #f1f5f9; color: #334155; font-size: 22px; cursor: pointer; }
+  .calculator-display { min-height: 62px; display: flex; flex-direction: column; align-items: flex-end; justify-content: center; gap: 3px; margin-bottom: 8px; padding: 8px 10px; overflow: hidden; border-radius: 7px; background: rgba(241,245,249,.68); color: #0f172a; font-variant-numeric: tabular-nums; text-align: right; }
+  .calculator-expression { width: 100%; min-height: 18px; color: #64748b; font-size: 14px; overflow-wrap: anywhere; }
+  .calculator-value { max-width: 100%; font-size: 28px; overflow-wrap: anywhere; }
+  .calculator-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+  .calculator-key { min-height: 44px; border: 1px solid rgba(226,232,240,.58); border-radius: 7px; background: rgba(255,255,255,.56); color: #1e293b; font-size: 17px; cursor: pointer; }
+  .calculator-key:hover { background: rgba(241,245,249,.96); }
+  .calculator-key.utility { background: rgba(226,232,240,.62); color: #334155; }
+  .calculator-key.operator { background: rgba(204,251,241,.68); color: #115e59; }
+  .calculator-key.equals { border-color: rgba(15,118,110,.8); background: rgba(15,118,110,.8); color: #fff; }
+  .calculator-key.wide { grid-column: span 2; }
+  .calculator-key.equals { grid-column: span 3; }
+  button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 3px solid #0f766e; outline-offset: 2px; }
+  @media (max-width: 640px) {
+    header { padding: 18px 12px; font-size: 22px; }
+    nav { gap: 6px; padding: 8px; }
+    nav button { flex: 1 1 0; min-width: 88px; padding: 10px 8px; font-size: 14px; }
+    .student-mode-nav { width: calc(100% - 20px); margin-top: 10px; }
+    .student-mode-nav button { flex-basis: 0; padding: 10px 8px; font-size: 14px; }
+    .container { margin: 12px auto; padding: 0 10px; }
+    .card { padding: 18px; border-radius: 12px; }
+    .row { gap: 8px; }
+    .row > div { min-width: min(100%, 220px); }
+    .q-item { align-items: stretch; flex-direction: column; }
+    .q-item > div:last-child { width: 100%; }
+    .q-item .btn { flex: 1 1 auto; margin: 0; }
+    .admin-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+    .admin-tile { min-height: 116px; }
+    .article { padding: 14px; font-size: 18px; line-height: 1.75; overflow-wrap: anywhere; }
+    .rtimer { font-size: 34px; }
+    .score { font-size: 46px; }
+    .msg { font-size: 18px; }
+    input[type=text], input[type=number], input[type=password], select, textarea { font-size: 16px; }
+    .study-bot { right: 12px; bottom: 12px; }
+    .chat-panel { bottom: 68px; height: min(520px, calc(100dvh - 100px)); }
+    .chat-launcher { width: 54px; }
+  }
+  @media (max-width: 380px) {
+    .calculator-dialog { padding: 10px; }
+    .calculator-grid { gap: 5px; }
+    .calculator-key { min-height: 40px; }
+  }
+  @media (max-width: 380px) {
+    header { font-size: 19px; }
+    nav button { min-width: 82px; padding: 9px 5px; font-size: 13px; }
+    .container { padding: 0 8px; }
+    .card { padding: 14px; }
+    .timer-text { top: 12px; right: 12px; width: 52px; height: 52px; font-size: 22px; }
+    #questionText, .progress { padding-right: 60px; }
+    .article { padding: 12px; font-size: 16px; }
+    .option { padding: 12px; font-size: 15px; }
+    button.btn { padding: 11px 14px; }
+    .score { font-size: 40px; }
+  }
+  @media (hover: none) {
+    .card:hover, nav button:hover, button.btn:hover, .option:hover { transform: none; box-shadow: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  }
+</style>
+</head>
+<body>
+
+<header><span>📚</span> Practice Hube <span>🚀</span></header>
+<nav>
+  <button id="navStudent" class="active" onclick="showPage('student')">Student</button>
+  <button id="navAdmin" onclick="showPage('admin')">Teacher</button>
+</nav>
+<div id="studentModeNav" class="student-mode-nav" aria-label="Student activities">
+  <button id="modeQuiz" class="active" onclick="showStudentMode('quiz')">MCQ Practice</button>
+  <button id="modeReading" onclick="showStudentMode('reading')">Reading Test</button>
+</div>
+
+<div class="container">
+
+  <!-- ADMIN PAGE -->
+  <div id="adminPage" class="hidden">
+    <div id="loginBox" class="login-panel">
+      <div class="login-emblem" aria-hidden="true">🔐</div>
+      <p class="login-kicker">TEACHER PORTAL</p>
+      <h2>Welcome back</h2>
+      <p class="login-copy">Sign in to manage questions, reading articles, and practice settings.</p>
+      <div class="login-field">
+        <label for="pass">Password</label>
+        <div class="login-input-wrap">
+          <span aria-hidden="true">🔒</span>
+          <input type="password" id="pass" placeholder="Enter your password" autocomplete="current-password" onkeydown="if(event.key==='Enter')login()">
+        </div>
+      </div>
+      <button class="btn login-submit" onclick="login()">Sign in</button>
+      <p class="progress" id="loginMsg" role="status" aria-live="polite">Default password: admin123 (please change it after your first login)</p>
+    </div>
+
+    <div id="adminPanel" class="hidden">
+      <div id="adminHome" class="card">
+        <h2>Admin Sections</h2>
+        <div class="admin-grid">
+          <button class="admin-tile" onclick="showAdminSection('securitySection')"><span class="admin-tile-icon" aria-hidden="true">🔐</span><span>Security</span></button>
+          <button class="admin-tile" onclick="showAdminSection('articlesSection')"><span class="admin-tile-icon" aria-hidden="true">📚</span><span>Reading Articles</span></button>
+          <button class="admin-tile" onclick="showAdminSection('settingsSection')"><span class="admin-tile-icon" aria-hidden="true">⏱️</span><span>Settings</span></button>
+          <button class="admin-tile" onclick="showAdminSection('questionFormSection')"><span class="admin-tile-icon" aria-hidden="true">✏️</span><span>Add Question</span></button>
+          <button class="admin-tile" onclick="showAdminSection('questionListSection')"><span class="admin-tile-icon" aria-hidden="true">📋</span><span>Question Library</span></button>
+        </div>
+      </div>
+
+      <section id="securitySection" class="admin-section hidden">
+        <div class="admin-section-head"><button class="section-back" onclick="showAdminHome()">← Admin Sections</button></div>
+      <div class="card">
+        <h2>Security</h2>
+        <div class="row">
+          <div><label>Current password</label><input type="password" id="oldPass"></div>
+          <div><label>New password (min 6 characters)</label><input type="password" id="newPass"></div>
+        </div>
+        <button class="btn green" onclick="changePassword()">Change Password</button>
+        <button class="btn red" onclick="logout()">Logout</button>
+      </div>
+      </section>
+
+      <section id="articlesSection" class="admin-section hidden">
+        <div class="admin-section-head"><button class="section-back" onclick="showAdminHome()">← Admin Sections</button></div>
+      <div class="card">
+        <h2>📖 Reading Articles</h2>
+        <p class="progress">Add articles for the reading test. Select ONE article as the active test - students will see only that one.</p>
+        <label>Article title</label>
+        <input type="text" id="aTitle">
+        <label>Article text</label>
+        <textarea id="aText" rows="6"></textarea>
+        <button class="btn" onclick="saveArticle()">Save Article</button>
+        <button class="btn gray" onclick="clearArticleForm()">Clear</button>
+        <h3 style="margin-top:18px">All Articles (<span id="aCount">0</span>)</h3>
+        <div id="aList"></div>
+      </div>
+      </section>
+
+      <section id="settingsSection" class="admin-section hidden">
+        <div class="admin-section-head"><button class="section-back" onclick="showAdminHome()">← Admin Sections</button></div>
+      <div class="card">
+        <h2>Settings</h2>
+        <label>Time per question (seconds)</label>
+        <input type="number" id="timePerQ" min="5" value="60">
+        <button class="btn green" onclick="saveSettings()">Save Time</button>
+      </div>
+      </section>
+
+      <section id="questionFormSection" class="admin-section hidden">
+        <div class="admin-section-head"><button class="section-back" onclick="showAdminHome()">← Admin Sections</button></div>
+      <div class="card">
+        <h2 id="formTitle">Add Question</h2>
+        <label>Question</label>
+        <textarea id="qText" rows="2"></textarea>
+        <div class="row">
+          <div><label>Option A</label><input type="text" id="oA"></div>
+          <div><label>Option B</label><input type="text" id="oB"></div>
+          <div><label>Option C</label><input type="text" id="oC"></div>
+          <div><label>Option D</label><input type="text" id="oD"></div>
+        </div>
+        <label>Correct Answer</label>
+        <select id="correct">
+          <option value="0">A</option>
+          <option value="1">B</option>
+          <option value="2">C</option>
+          <option value="3">D</option>
+        </select>
+        <button class="btn" onclick="saveQuestion()">Save Question</button>
+        <button class="btn gray" onclick="clearForm()">Clear</button>
+      </div>
+      </section>
+
+      <section id="questionListSection" class="admin-section hidden">
+        <div class="admin-section-head"><button class="section-back" onclick="showAdminHome()">← Admin Sections</button></div>
+      <div class="card">
+        <h2>All Questions (<span id="count">0</span>)</h2>
+        <div id="qList"></div>
+        <button class="btn gray" onclick="exportQ()">Export Questions</button>
+        <button class="btn gray" onclick="document.getElementById('importFile').click()">Import Questions</button>
+        <input type="file" id="importFile" class="hidden" accept=".json" onchange="importQ(event)">
+        <button class="btn red" onclick="deleteAll()">Delete All</button>
+      </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- READING PAGE -->
+  <div id="readingPage" class="hidden">
+    <div class="card">
+      <h2>🎤 Reading Test</h2>
+      <h3 id="rTitle"></h3>
+      <div id="rArticle" class="article blur"></div>
+      <div class="rtimer" id="rTimer">00:00</div>
+      <div style="text-align:center">
+        <button class="btn green" id="rStartBtn" onclick="startReading()">▶ Start Reading</button>
+        <button class="btn red hidden" id="rStopBtn" onclick="finishReading()">⏹ Finish</button>
+      </div>
+      <div class="live-box hidden" id="rLive"></div>
+      <p class="progress" id="rInfo"></p>
+    </div>
+    <div id="rResult" class="hidden">
+      <div class="card">
+        <h2 style="text-align:center">📊 Your Reading Result</h2>
+        <div class="score" id="rScore"></div>
+        <div class="msg" id="rMsg"></div>
+        <div class="row" style="text-align:center">
+          <div><b>⏱ Time</b><br><span id="rTime"></span></div>
+          <div><b>🚀 Speed</b><br><span id="rWpm"></span></div>
+          <div><b>✅ Accuracy</b><br><span id="rAcc"></span></div>
+        </div>
+        <h3>Your reading (green = good, red = needs practice)</h3>
+        <div class="article" id="rMarked"></div>
+        <h3>Words to practise</h3>
+        <div id="rBadList"></div>
+        <button class="btn" onclick="showReadingStart()">Try Again</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STUDENT PAGE -->
+  <div id="studentPage">
+    <div id="startBox" class="card">
+      <h2>🎯 Ready for the test?</h2>
+      <p id="startInfo"></p>
+      <button class="btn green" onclick="startQuiz()">Start Test</button>
+      <button class="btn gray" onclick="toggleCalculator(true)">🧮 Calculator</button>
+    </div>
+
+    <div id="quizBox" class="card hidden">
+      <div class="progress" id="progressText"></div>
+      <div class="timer-text" id="timerText"></div>
+      <div class="timer-bar"><div class="timer-fill" id="timerFill"></div></div>
+      <h3 id="questionText"></h3>
+      <div id="options"></div>
+      <button class="btn" onclick="nextQuestion()" title="Next question (Enter)" aria-keyshortcuts="Enter">Next</button>
+      <button class="btn gray" onclick="toggleCalculator(true)">🧮 Calculator</button>
+    </div>
+
+    <div id="resultBox" class="hidden">
+      <div class="card">
+        <h2 style="text-align:center">🎉 Test Finished</h2>
+        <div class="score" id="scoreText"></div>
+        <div class="msg" id="resultMsg"></div>
+        <button class="btn" onclick="startQuiz()">Try Again</button>
+      </div>
+      <div id="review"></div>
+    </div>
+  </div>
+
+</div>
+
+<div id="calculatorBackdrop" class="calculator-backdrop hidden" aria-hidden="true" onclick="if(event.target===this)toggleCalculator(false)">
+  <section class="calculator-dialog" role="dialog" aria-modal="true" aria-labelledby="calculatorTitle">
+    <div class="calculator-heading">
+      <h2 id="calculatorTitle">Calculator</h2>
+      <button type="button" aria-label="Close calculator" onclick="toggleCalculator(false)">×</button>
+    </div>
+    <div id="calculatorDisplay" class="calculator-display" role="status" aria-live="polite" tabindex="0">
+      <span id="calculatorExpression" class="calculator-expression"></span>
+      <span id="calculatorValue" class="calculator-value">0</span>
+    </div>
+    <div class="calculator-grid">
+      <button class="calculator-key utility" type="button" onclick="calculatorClear()" aria-label="Clear">AC</button>
+      <button class="calculator-key utility" type="button" onclick="calculatorToggleSign()" aria-label="Change sign">±</button>
+      <button class="calculator-key utility" type="button" onclick="calculatorPercent()" aria-label="Percent">%</button>
+      <button class="calculator-key utility" type="button" onclick="calculatorSquareRoot()" aria-label="Square root">√x</button>
+      <button class="calculator-key operator" type="button" onclick="calculatorSetOperator('/')" aria-label="Divide">÷</button>
+      <button class="calculator-key" type="button" onclick="calculatorInput('7')">7</button>
+      <button class="calculator-key" type="button" onclick="calculatorInput('8')">8</button>
+      <button class="calculator-key" type="button" onclick="calculatorInput('9')">9</button>
+      <button class="calculator-key operator" type="button" onclick="calculatorSetOperator('*')" aria-label="Multiply">×</button>
+      <button class="calculator-key" type="button" onclick="calculatorInput('4')">4</button>
+      <button class="calculator-key" type="button" onclick="calculatorInput('5')">5</button>
+      <button class="calculator-key" type="button" onclick="calculatorInput('6')">6</button>
+      <button class="calculator-key operator" type="button" onclick="calculatorSetOperator('-')" aria-label="Subtract">−</button>
+      <button class="calculator-key" type="button" onclick="calculatorInput('1')">1</button>
+      <button class="calculator-key" type="button" onclick="calculatorInput('2')">2</button>
+      <button class="calculator-key" type="button" onclick="calculatorInput('3')">3</button>
+      <button class="calculator-key operator" type="button" onclick="calculatorSetOperator('+')" aria-label="Add">+</button>
+      <button class="calculator-key wide" type="button" onclick="calculatorInput('0')">0</button>
+      <button class="calculator-key" type="button" onclick="calculatorDecimal()" aria-label="Decimal point">.</button>
+      <button class="calculator-key equals" type="button" onclick="calculatorEquals()" aria-label="Equals">=</button>
+      <button class="calculator-key utility" type="button" onclick="calculatorBackspace()" aria-label="Backspace">⌫</button>
+    </div>
+  </section>
+</div>
+
+<div class="study-bot">
+  <section id="chatPanel" class="chat-panel hidden" aria-labelledby="chatTitle">
+    <div class="chat-header">
+      <div><h2 id="chatTitle">Practice Helper</h2><p>Free local helper · works offline</p></div>
+      <button class="chat-close" type="button" aria-label="Close Practice Helper" onclick="toggleStudyBuddy(false)">×</button>
+    </div>
+    <div id="chatMessages" class="chat-messages" role="log" aria-live="polite" aria-relevant="additions">
+      <p class="chat-message bot">Hi! I can help with quizzes, reading practice, scores, and teacher settings. Your messages stay in this browser.</p>
+      <div class="chat-suggestions">
+        <button type="button" onclick="askStudyBuddy('How do I start a test?')">Start a test</button>
+        <button type="button" onclick="askStudyBuddy('Give me study tips')">Study tips</button>
+        <button type="button" onclick="askStudyBuddy('How does reading practice work?')">Reading practice</button>
+      </div>
+    </div>
+    <form class="chat-form" onsubmit="return submitStudyBuddy(event)">
+      <input id="chatInput" type="text" maxlength="400" placeholder="Ask a question..." aria-label="Ask Practice Helper">
+      <button class="chat-send" type="submit" aria-label="Send message">↑</button>
+    </form>
+  </section>
+  <button id="chatToggle" class="chat-launcher" type="button" aria-label="Open Practice Helper" aria-expanded="false" aria-controls="chatPanel" onclick="toggleStudyBuddy()">💬</button>
+</div>
+
+<script>
+  /* ---------- SECURITY ---------- */
+  const DEFAULT_HASH = '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9'; /* hash of admin123 */
+  const MAX_ATTEMPTS = 3;
+  const LOCK_SECONDS = 60;
+  const SESSION_MINUTES = 15;
+  let adminTimeout = null;
+
+  async function sha256(text) {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+
+  function getHash() { return localStorage.getItem('mcq_pass_hash') || DEFAULT_HASH; }
+  let questions = JSON.parse(localStorage.getItem('mcq_questions') || '[]');
+  let timePerQ = parseInt(localStorage.getItem('mcq_time') || '60');
+  let editIndex = -1;
+
+  let articles = JSON.parse(localStorage.getItem('mcq_articles') || '[]');
+  let activeArticleId = localStorage.getItem('mcq_active_article') || '';
+  let articleEditId = '';
+  let recognition = null, readingInterval = null, readingStartedAt = 0, readingTranscript = '';
+
+  let current = 0, answers = [], timeLeft = 0, timerId = null;
+  let lastQuizResult = null;
+  let calculatorDisplayValue = '0', calculatorExpression = '';
+  let calculatorStoredValue = null, calculatorOperator = null, calculatorWaiting = true, calculatorReturnFocus = null;
+  let studentMode = 'quiz';
+
+  function $(id) { return document.getElementById(id); }
+
+  function showPage(p) {
+    $('adminPage').classList.toggle('hidden', p !== 'admin');
+    $('studentPage').classList.toggle('hidden', p !== 'student' || studentMode !== 'quiz');
+    $('readingPage').classList.toggle('hidden', p !== 'student' || studentMode !== 'reading');
+    $('studentModeNav').classList.toggle('hidden', p !== 'student');
+    $('navAdmin').classList.toggle('active', p === 'admin');
+    $('navStudent').classList.toggle('active', p === 'student');
+    stopReadingSilently();
+    if (p === 'student') {
+      stopTimer();
+      if (studentMode === 'reading') showReadingStart();
+      else showStart();
+    }
+  }
+
+  function showStudentMode(mode) {
+    if (mode !== 'quiz' && mode !== 'reading') return;
+    studentMode = mode;
+    const reading = mode === 'reading';
+    $('modeQuiz').classList.toggle('active', !reading);
+    $('modeReading').classList.toggle('active', reading);
+    $('studentPage').classList.toggle('hidden', reading);
+    $('readingPage').classList.toggle('hidden', !reading);
+    stopTimer();
+    stopReadingSilently();
+    if (reading) showReadingStart();
+    else showStart();
+  }
+
+  function showAdminHome() {
+    $('adminHome').classList.remove('hidden');
+    document.querySelectorAll('.admin-section').forEach(section => section.classList.add('hidden'));
+    window.scrollTo(0, 0);
+  }
+
+  function showAdminSection(sectionId) {
+    const target = $(sectionId);
+    if (!target) return;
+    $('adminHome').classList.add('hidden');
+    document.querySelectorAll('.admin-section').forEach(section => section.classList.add('hidden'));
+    target.classList.remove('hidden');
+    window.scrollTo(0, 0);
+  }
+
+  /* ---------- ADMIN ---------- */
+  async function login() {
+    const lockUntil = parseInt(localStorage.getItem('mcq_lock_until') || '0');
+    if (Date.now() < lockUntil) {
+      const s = Math.ceil((lockUntil - Date.now()) / 1000);
+      $('loginMsg').textContent = 'Too many wrong attempts. Try again in ' + s + ' seconds.';
+      return;
+    }
+    const entered = await sha256($('pass').value);
+    if (entered === getHash()) {
+      localStorage.setItem('mcq_attempts', '0');
+      $('pass').value = '';
+      $('loginBox').classList.add('hidden');
+      $('adminPanel').classList.remove('hidden');
+      showAdminHome();
+      $('timePerQ').value = timePerQ;
+      renderList();
+      renderArticles();
+      resetAdminTimer();
+    } else {
+      const attempts = parseInt(localStorage.getItem('mcq_attempts') || '0') + 1;
+      localStorage.setItem('mcq_attempts', attempts);
+      if (attempts >= MAX_ATTEMPTS) {
+        localStorage.setItem('mcq_lock_until', Date.now() + LOCK_SECONDS * 1000);
+        localStorage.setItem('mcq_attempts', '0');
+        $('loginMsg').textContent = 'Locked for ' + LOCK_SECONDS + ' seconds after ' + MAX_ATTEMPTS + ' wrong attempts.';
+      } else {
+        $('loginMsg').textContent = 'Wrong password. Attempts left: ' + (MAX_ATTEMPTS - attempts);
+      }
+    }
+  }
+
+  function logout() {
+    clearTimeout(adminTimeout);
+    $('adminPanel').classList.add('hidden');
+    $('loginBox').classList.remove('hidden');
+    $('loginMsg').textContent = 'You have been logged out.';
+    showAdminHome();
+    showPage('student');
+  }
+
+  function resetAdminTimer() {
+    clearTimeout(adminTimeout);
+    adminTimeout = setTimeout(() => { alert('Session expired for security. Please log in again.'); logout(); }, SESSION_MINUTES * 60 * 1000);
+  }
+  ['click', 'keydown'].forEach(ev => document.addEventListener(ev, () => {
+    if (!$('adminPanel').classList.contains('hidden')) resetAdminTimer();
+  }));
+
+  async function changePassword() {
+    const oldP = $('oldPass').value, newP = $('newPass').value;
+    if ((await sha256(oldP)) !== getHash()) { alert('Current password is wrong'); return; }
+    if (newP.length < 6) { alert('New password must be at least 6 characters'); return; }
+    localStorage.setItem('mcq_pass_hash', await sha256(newP));
+    $('oldPass').value = ''; $('newPass').value = '';
+    alert('Password changed successfully');
+  }
+
+  function saveSettings() {
+    const t = parseInt($('timePerQ').value);
+    if (!t || t < 5) { alert('Enter at least 5 seconds'); return; }
+    timePerQ = t;
+    localStorage.setItem('mcq_time', t);
+    alert('Time saved: ' + t + ' seconds per question');
+  }
+
+  function saveQuestion() {
+    const q = $('qText').value.trim();
+    const opts = [$('oA').value.trim(), $('oB').value.trim(), $('oC').value.trim(), $('oD').value.trim()];
+    if (!q || opts.some(o => !o)) { alert('Please fill the question and all four options'); return; }
+    const item = { q, opts, correct: parseInt($('correct').value) };
+    if (editIndex >= 0) { questions[editIndex] = item; editIndex = -1; $('formTitle').textContent = 'Add Question'; }
+    else { questions.push(item); }
+    persist(); clearForm(); renderList();
+  }
+
+  function clearForm() {
+    ['qText','oA','oB','oC','oD'].forEach(id => $(id).value = '');
+    $('correct').value = '0';
+    editIndex = -1; $('formTitle').textContent = 'Add Question';
+  }
+
+  function renderList() {
+    $('count').textContent = questions.length;
+    $('qList').innerHTML = questions.map((x, i) =>
+      `<div class="q-item"><div><b>${i + 1}.</b> ${esc(x.q)}<br><small>Correct: ${'ABCD'[x.correct]}</small></div>
+       <div><button class="btn gray" onclick="editQ(${i})">Edit</button><button class="btn red" onclick="delQ(${i})">Delete</button></div></div>`
+    ).join('') || '<p>No questions yet.</p>';
+  }
+
+  function editQ(i) {
+    const x = questions[i];
+    $('qText').value = x.q;
+    $('oA').value = x.opts[0]; $('oB').value = x.opts[1]; $('oC').value = x.opts[2]; $('oD').value = x.opts[3];
+    $('correct').value = x.correct;
+    editIndex = i; $('formTitle').textContent = 'Edit Question ' + (i + 1);
+    showAdminSection('questionFormSection');
+  }
+
+  function delQ(i) { if (confirm('Delete this question?')) { questions.splice(i, 1); persist(); renderList(); } }
+  function deleteAll() { if (confirm('Delete ALL questions?')) { questions = []; persist(); renderList(); } }
+  function persist() { localStorage.setItem('mcq_questions', JSON.stringify(questions)); }
+
+  function exportQ() {
+    const data = JSON.stringify({ time: timePerQ, questions }, null, 2);
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([data], { type: 'application/json' }));
+    a.download = 'mcq-questions.json'; a.click();
+  }
+
+  function importQ(e) {
+    const file = e.target.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const d = JSON.parse(reader.result);
+        questions = d.questions || [];
+        if (d.time) { timePerQ = d.time; localStorage.setItem('mcq_time', d.time); $('timePerQ').value = d.time; }
+        persist(); renderList(); alert('Imported ' + questions.length + ' questions');
+      } catch { alert('Invalid file'); }
+    };
+    reader.readAsText(file);
+  }
+
+  function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  /* ---------- READING TEST ---------- */
+  function persistArticles() {
+    localStorage.setItem('mcq_articles', JSON.stringify(articles));
+    localStorage.setItem('mcq_active_article', activeArticleId);
+  }
+
+  function getActiveArticle() {
+    return articles.find(article => article.id === activeArticleId) || null;
+  }
+
+  function renderArticles() {
+    $('aCount').textContent = articles.length;
+    $('aList').innerHTML = articles.map((article, index) => {
+      const active = article.id === activeArticleId;
+      return `<div class="q-item"><div><b>${esc(article.title)}</b>${active ? '<span class="badge">Active test</span>' : ''}<br><small>${article.text.trim().split(/\s+/).length} words</small></div>
+        <div><button class="btn gray" onclick="editArticle(${index})">Edit</button><button class="btn ${active ? 'gray' : 'green'}" onclick="setActiveArticle(${index})">${active ? 'Active' : 'Set active'}</button><button class="btn red" onclick="deleteArticle(${index})">Delete</button></div></div>`;
+    }).join('') || '<p>No articles yet.</p>';
+  }
+
+  function saveArticle() {
+    const title = $('aTitle').value.trim();
+    const text = $('aText').value.trim();
+    if (!title || !text) { alert('Please enter an article title and text'); return; }
+    let article;
+    if (articleEditId) {
+      article = articles.find(item => item.id === articleEditId);
+      if (!article) { clearArticleForm(); return; }
+      article.title = title;
+      article.text = text;
+    } else {
+      article = { id: (crypto.randomUUID ? crypto.randomUUID() : Date.now() + '-' + Math.random()), title, text };
+      articles.push(article);
+      if (!activeArticleId) activeArticleId = article.id;
+    }
+    persistArticles();
+    clearArticleForm();
+    renderArticles();
+    showReadingStart();
+  }
+
+  function clearArticleForm() {
+    $('aTitle').value = '';
+    $('aText').value = '';
+    articleEditId = '';
+    $('aTitle').focus();
+  }
+
+  function editArticle(index) {
+    const article = articles[index];
+    if (!article) return;
+    articleEditId = article.id;
+    $('aTitle').value = article.title;
+    $('aText').value = article.text;
+    $('aTitle').focus();
+  }
+
+  function setActiveArticle(index) {
+    const article = articles[index];
+    if (!article) return;
+    activeArticleId = article.id;
+    persistArticles();
+    renderArticles();
+    showReadingStart();
+  }
+
+  function deleteArticle(index) {
+    const article = articles[index];
+    if (!article || !confirm('Delete this article?')) return;
+    articles.splice(index, 1);
+    if (activeArticleId === article.id) activeArticleId = articles.length ? articles[0].id : '';
+    if (articleEditId === article.id) clearArticleForm();
+    persistArticles();
+    renderArticles();
+    showReadingStart();
+  }
+
+  function formatReadingTime(seconds) {
+    const minutes = Math.floor(seconds / 60).toString().padStart(2, '0');
+    const remainder = (seconds % 60).toString().padStart(2, '0');
+    return minutes + ':' + remainder;
+  }
+
+  function showReadingStart() {
+    stopReadingSilently();
+    const article = getActiveArticle();
+    $('rResult').classList.add('hidden');
+    $('rStartBtn').classList.remove('hidden');
+    $('rStopBtn').classList.add('hidden');
+    $('rLive').classList.add('hidden');
+    $('rLive').contentEditable = 'false';
+    $('rLive').removeAttribute('data-placeholder');
+    $('rLive').textContent = '';
+    $('rArticle').classList.add('blur');
+    $('rTimer').textContent = '00:00';
+    $('rTitle').textContent = article ? article.title : 'No active article';
+    $('rArticle').textContent = article ? article.text : 'Ask your teacher to add and activate a reading article.';
+    $('rInfo').textContent = article ? 'Start when you are ready. Your reading will be checked with speech recognition.' : 'There is no active reading article yet.';
+    $('rStartBtn').disabled = !article;
+  }
+
+  function startReading() {
+    const article = getActiveArticle();
+    if (!article || readingStartedAt) return;
+    readingTranscript = '';
+    readingStartedAt = Date.now();
+    $('rResult').classList.add('hidden');
+    $('rArticle').classList.remove('blur');
+    $('rStartBtn').classList.add('hidden');
+    $('rStopBtn').classList.remove('hidden');
+    $('rLive').classList.remove('hidden');
+    $('rLive').textContent = '';
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = 'en-US';
+      recognition.onresult = event => {
+        let interim = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const transcript = event.results[i][0].transcript;
+          if (event.results[i].isFinal) readingTranscript += transcript + ' ';
+          else interim += transcript;
+        }
+        $('rLive').textContent = (readingTranscript + interim).trim();
+      };
+      recognition.onerror = event => {
+        $('rInfo').textContent = event.error === 'not-allowed'
+          ? 'Microphone access was denied. Allow microphone access and try again.'
+          : 'Speech recognition stopped (' + event.error + '). Finish to see the words captured so far.';
+      };
+      $('rInfo').textContent = 'Read the article aloud. Allow microphone access if your browser asks.';
+      try { recognition.start(); }
+      catch { $('rInfo').textContent = 'Speech recognition could not start. Check microphone access and try again.'; }
+    } else {
+      $('rLive').contentEditable = 'true';
+      $('rLive').setAttribute('aria-label', 'Type the words you read aloud');
+      $('rLive').setAttribute('data-placeholder', 'Type the words you read aloud...');
+      $('rLive').textContent = '';
+      $('rInfo').textContent = 'Read the article aloud, then enter the words you read in the box below.';
+    }
+
+    readingInterval = setInterval(() => {
+      $('rTimer').textContent = formatReadingTime(Math.floor((Date.now() - readingStartedAt) / 1000));
+    }, 250);
+  }
+
+  function stopReadingSilently() {
+    if (readingInterval) { clearInterval(readingInterval); readingInterval = null; }
+    if (recognition) {
+      recognition.onresult = null;
+      recognition.onerror = null;
+      try { recognition.stop(); } catch {}
+      recognition = null;
+    }
+    readingStartedAt = 0;
+  }
+
+  function finishReading() {
+    if (!readingStartedAt) return;
+    const elapsed = Math.max(1, Math.floor((Date.now() - readingStartedAt) / 1000));
+    const fallbackText = $('rLive').contentEditable === 'true' ? $('rLive').textContent : '';
+    const transcript = (readingTranscript + ' ' + fallbackText).trim();
+    const article = getActiveArticle();
+    stopReadingSilently();
+    if (!article) { showReadingStart(); return; }
+
+    const target = article.text.match(/\S+/g) || [];
+    const spoken = (transcript.toLowerCase().match(/[a-z0-9']+/g) || []);
+    const normalize = word => word.toLowerCase().replace(/[^a-z0-9']/g, '');
+    let spokenIndex = 0;
+    let matched = 0;
+    const missed = [];
+    const marked = target.map(word => {
+      const expected = normalize(word);
+      let found = -1;
+      for (let i = spokenIndex; i < Math.min(spoken.length, spokenIndex + 4); i++) {
+        if (spoken[i] === expected) { found = i; break; }
+      }
+      if (found >= 0) { matched++; spokenIndex = found + 1; return `<span class="wgood">${esc(word)}</span>`; }
+      missed.push(expected);
+      return `<span class="wbad">${esc(word)}</span>`;
+    });
+    const accuracy = target.length ? Math.round((matched / target.length) * 100) : 0;
+    const wordsPerMinute = Math.round(spoken.length / (elapsed / 60));
+    const uniqueMissed = [...new Set(missed.filter(Boolean))];
+
+    $('rResult').classList.remove('hidden');
+    $('rStartBtn').classList.remove('hidden');
+    $('rStopBtn').classList.add('hidden');
+    $('rLive').classList.add('hidden');
+    $('rTimer').textContent = formatReadingTime(elapsed);
+    $('rScore').textContent = accuracy + '%';
+    $('rMsg').textContent = accuracy >= 90 ? 'Excellent reading!' : accuracy >= 70 ? 'Good work. Practise the highlighted words.' : 'Keep practising. Read slowly and clearly.';
+    $('rTime').textContent = formatReadingTime(elapsed);
+    $('rWpm').textContent = wordsPerMinute + ' words/min';
+    $('rAcc').textContent = matched + ' of ' + target.length + ' words';
+    $('rMarked').innerHTML = marked.join(' ');
+    $('rBadList').innerHTML = uniqueMissed.length
+      ? uniqueMissed.map(word => `<span class="badge">${esc(word)}</span>`).join(' ')
+      : '<p>All article words were recognized. Great reading!</p>';
+    $('rInfo').textContent = transcript ? 'Reading complete.' : 'No speech was captured. Check microphone access and try again.';
+    if (accuracy >= 70) confetti();
+  }
+
+  /* ---------- STUDENT ---------- */
+  function showStart() {
+    $('startBox').classList.remove('hidden');
+    $('quizBox').classList.add('hidden');
+    $('resultBox').classList.add('hidden');
+    $('startInfo').textContent = questions.length
+      ? `${questions.length} questions. ${timePerQ} seconds for each question.`
+      : 'No questions available yet. Please ask your teacher.';
+  }
+
+  function startQuiz() {
+    if (!questions.length) { alert('No questions available yet'); return; }
+    current = 0; answers = new Array(questions.length).fill(null);
+    $('startBox').classList.add('hidden');
+    $('resultBox').classList.add('hidden');
+    $('quizBox').classList.remove('hidden');
+    showQuestion();
+  }
+
+  function showQuestion() {
+    const x = questions[current];
+    const qb = $('quizBox'); qb.style.animation = 'none'; void qb.offsetWidth; qb.style.animation = 'fadeUp .5s ease both';
+    $('progressText').textContent = `Question ${current + 1} of ${questions.length}`;
+    $('questionText').textContent = x.q;
+    $('options').innerHTML = x.opts.map((o, i) =>
+      `<button class="option" onclick="selectOption(${i})" id="opt${i}"><b>${'ABCD'[i]}.</b> ${esc(o)}</button>`
+    ).join('');
+    startTimer();
+  }
+
+  function selectOption(i) {
+    answers[current] = i;
+    document.querySelectorAll('.option').forEach(b => b.classList.remove('selected'));
+    $('opt' + i).classList.add('selected');
+  }
+
+  function startTimer() {
+    stopTimer();
+    timeLeft = timePerQ;
+    updateTimer();
+    timerId = setInterval(() => {
+      timeLeft--;
+      updateTimer();
+      if (timeLeft <= 0) { nextQuestion(); }
+    }, 1000);
+  }
+
+  function updateTimer() {
+    const tt = $('timerText');
+    tt.classList.toggle('warn', timeLeft <= 20 && timeLeft > 10);
+    tt.classList.toggle('danger', timeLeft <= 10);
+    tt.textContent = timeLeft;
+    const pct = (timeLeft / timePerQ) * 100;
+    const fill = $('timerFill');
+    fill.style.width = pct + '%';
+    fill.style.background = pct > 50 ? '#16a34a' : pct > 20 ? '#f59e0b' : '#dc2626';
+  }
+
+  function animateScore(score, total) {
+    const el = $('scoreText');
+    let n = 0;
+    const step = setInterval(() => {
+      el.textContent = n + ' / ' + total;
+      if (n >= score) { clearInterval(step); celebrate(score, total); }
+      n++;
+    }, 90);
+  }
+
+  function celebrate(score, total) {
+    const pct = total ? (score / total) * 100 : 0;
+    let msg = '💪 Keep practising, you will get better!';
+    if (pct >= 90) msg = '🏆 Outstanding! You are a star!';
+    else if (pct >= 70) msg = '🌟 Great job! Well done!';
+    else if (pct >= 50) msg = '👍 Good effort! Try again to improve.';
+    $('resultMsg').textContent = msg;
+    if (pct >= 70) confetti();
+  }
+
+  function confetti() {
+    const colors = ['#6366f1', '#ec4899', '#f59e0b', '#22c55e', '#06b6d4', '#ef4444'];
+    for (let i = 0; i < 80; i++) {
+      const c = document.createElement('div');
+      c.className = 'confetti';
+      c.style.left = Math.random() * 100 + 'vw';
+      c.style.background = colors[Math.floor(Math.random() * colors.length)];
+      c.style.animationDelay = Math.random() * 1.2 + 's';
+      c.style.animationDuration = (2.5 + Math.random() * 2) + 's';
+      c.style.borderRadius = Math.random() > .5 ? '50%' : '2px';
+      document.body.appendChild(c);
+      setTimeout(() => c.remove(), 6000);
+    }
+  }
+
+  function stopTimer() { if (timerId) { clearInterval(timerId); timerId = null; } }
+
+  function nextQuestion() {
+    stopTimer();
+    current++;
+    if (current >= questions.length) { finishQuiz(); } else { showQuestion(); }
+  }
+
+  function finishQuiz() {
+    $('quizBox').classList.add('hidden');
+    $('resultBox').classList.remove('hidden');
+    let score = 0;
+    questions.forEach((x, i) => { if (answers[i] === x.correct) score++; });
+    lastQuizResult = { score, total: questions.length };
+    animateScore(score, questions.length);
+    $('review').innerHTML = questions.map((x, i) => {
+      const your = answers[i];
+      const opts = x.opts.map((o, k) => {
+        let cls = 'option';
+        if (k === x.correct) cls += ' correct';
+        else if (k === your) cls += ' wrong';
+        return `<div class="${cls}"><b>${'ABCD'[k]}.</b> ${esc(o)}${k === x.correct ? ' ✔ Correct answer' : ''}${k === your && k !== x.correct ? ' ✘ Your answer' : ''}</div>`;
+      }).join('');
+      return `<div class="card"><h3>${i + 1}. ${esc(x.q)}</h3>${opts}${your === null ? '<p style="color:#dc2626">Not answered (time ran out)</p>' : ''}</div>`;
+    }).join('');
+  }
+
+  function getStudyBuddyReply(message) {
+    const text = message.toLowerCase();
+    if (/\b(hi|hello|hey)\b/.test(text)) return 'Hi! What would you like help with: an MCQ test, reading practice, your result, or study tips?';
+    if (/\b(score|result|last test|how did i do)\b/.test(text)) {
+      if (!lastQuizResult) return 'You have not finished an MCQ test in this session yet. Open Student, choose MCQ Practice, and finish a test to see your result here.';
+      const percent = Math.round((lastQuizResult.score / lastQuizResult.total) * 100);
+      return `Your latest MCQ result was ${lastQuizResult.score} out of ${lastQuizResult.total} (${percent}%). Review the questions after the result and retry to improve.`;
+    }
+    if (/\b(read|reading|article|pronunciation|speak|speech)\b/.test(text)) {
+      const activeArticle = getActiveArticle();
+      return activeArticle
+        ? `Your active reading article is “${activeArticle.title}”. In Student, choose Reading Test and press Start Reading. Allow microphone access if your browser asks.`
+        : 'There is no active reading article yet. Ask your teacher to add an article and mark it as active in Teacher > Reading Articles.';
+    }
+    if (/\b(quiz|test|question|mcq|practice)\b/.test(text)) {
+      return questions.length
+        ? `There are ${questions.length} questions available. Open Student > MCQ Practice and press Start Test. You have ${timePerQ} seconds for each question.`
+        : 'No MCQ questions have been added yet. Ask your teacher to add questions in Teacher > Add Question.';
+    }
+    if (/\b(time|timer|seconds)\b/.test(text)) return `Each MCQ question currently has ${timePerQ} seconds. The teacher can change this in Teacher > Settings.`;
+    if (/\b(study|improv|remember|tips|learn|focus)\b/.test(text)) return 'Try a short daily session: answer without rushing, review every missed question, then retry after a break. For reading, practise slowly and clearly before increasing your pace.';
+    if (/\b(teacher|admin|setting|password|import|export|article)\b/.test(text)) return 'The Teacher area contains separate sections for Security, Reading Articles, Settings, Add Question, and Question Library. Teacher access is protected by its password.';
+    return 'I can help with MCQ tests, reading practice, quiz results, timer settings, or study tips. Try asking about one of those topics.';
+  }
+
+  function addStudyBuddyMessage(message, role) {
+    const item = document.createElement('p');
+    item.className = 'chat-message ' + role;
+    item.textContent = message;
+    $('chatMessages').appendChild(item);
+    $('chatMessages').scrollTop = $('chatMessages').scrollHeight;
+  }
+
+  function sendStudyBuddyMessage(message) {
+    const text = message.trim();
+    if (!text) return;
+    addStudyBuddyMessage(text, 'user');
+    $('chatInput').value = '';
+    addStudyBuddyMessage(getStudyBuddyReply(text), 'bot');
+  }
+
+  function askStudyBuddy(message) {
+    $('chatInput').value = message;
+    sendStudyBuddyMessage(message);
+  }
+
+  function submitStudyBuddy(event) {
+    event.preventDefault();
+    sendStudyBuddyMessage($('chatInput').value);
+    return false;
+  }
+
+  function toggleStudyBuddy(forceOpen) {
+    const panel = $('chatPanel');
+    const open = typeof forceOpen === 'boolean' ? forceOpen : panel.classList.contains('hidden');
+    panel.classList.toggle('hidden', !open);
+    $('chatToggle').setAttribute('aria-expanded', String(open));
+    if (open) $('chatInput').focus();
+  }
+
+  function formatCalculatorValue(value) {
+    if (!Number.isFinite(value)) return 'Error';
+    return String(Number(value.toPrecision(10)));
+  }
+
+  function updateCalculatorDisplay() {
+    $('calculatorExpression').textContent = calculatorExpression;
+    $('calculatorValue').textContent = calculatorDisplayValue;
+  }
+
+  function calculatorClear() {
+    calculatorDisplayValue = '0';
+    calculatorExpression = '';
+    calculatorStoredValue = null;
+    calculatorOperator = null;
+    calculatorWaiting = true;
+    updateCalculatorDisplay();
+  }
+
+  function calculatorInput(digit) {
+    if (calculatorDisplayValue === 'Error') calculatorClear();
+    if (calculatorWaiting) {
+      calculatorDisplayValue = digit;
+      calculatorWaiting = false;
+      if (!calculatorOperator) calculatorExpression = '';
+    } else if (calculatorDisplayValue.replace(/[-.]/g, '').length < 14) {
+      calculatorDisplayValue = calculatorDisplayValue === '0' ? digit : calculatorDisplayValue + digit;
+    }
+    if (calculatorOperator && calculatorStoredValue !== null) {
+      calculatorExpression = `${formatCalculatorValue(calculatorStoredValue)} ${calculatorOperatorSymbol(calculatorOperator)} ${calculatorDisplayValue}`;
+    }
+    updateCalculatorDisplay();
+  }
+
+  function calculatorDecimal() {
+    if (calculatorDisplayValue === 'Error') calculatorClear();
+    if (calculatorWaiting) {
+      calculatorDisplayValue = '0.';
+      calculatorWaiting = false;
+      if (!calculatorOperator) calculatorExpression = '';
+    } else if (!calculatorDisplayValue.includes('.')) calculatorDisplayValue += '.';
+    if (calculatorOperator && calculatorStoredValue !== null) {
+      calculatorExpression = `${formatCalculatorValue(calculatorStoredValue)} ${calculatorOperatorSymbol(calculatorOperator)} ${calculatorDisplayValue}`;
+    }
+    updateCalculatorDisplay();
+  }
+
+  function calculatorOperatorSymbol(operator) {
+    return { '+': '+', '-': '−', '*': '×', '/': '÷' }[operator] || operator;
+  }
+
+  function calculatorApply(left, right, operator) {
+    if (operator === '+') return left + right;
+    if (operator === '-') return left - right;
+    if (operator === '*') return left * right;
+    if (operator === '/') return right === 0 ? null : left / right;
+    return right;
+  }
+
+  function calculatorSetOperator(operator) {
+    if (calculatorDisplayValue === 'Error') calculatorClear();
+    let value = Number(calculatorDisplayValue);
+    if (calculatorOperator && !calculatorWaiting) {
+      value = calculatorApply(calculatorStoredValue, value, calculatorOperator);
+      if (value === null || !Number.isFinite(value)) {
+        calculatorDisplayValue = 'Error';
+        calculatorStoredValue = null;
+        calculatorOperator = null;
+        calculatorWaiting = true;
+        updateCalculatorDisplay();
+        return;
+      }
+      calculatorDisplayValue = formatCalculatorValue(value);
+    }
+    calculatorStoredValue = Number(calculatorDisplayValue);
+    calculatorOperator = operator;
+    calculatorWaiting = true;
+    calculatorExpression = `${calculatorDisplayValue} ${calculatorOperatorSymbol(operator)}`;
+    updateCalculatorDisplay();
+  }
+
+  function calculatorEquals() {
+    if (!calculatorOperator || calculatorStoredValue === null) return;
+    const left = calculatorStoredValue;
+    const right = Number(calculatorDisplayValue);
+    const operator = calculatorOperator;
+    const result = calculatorApply(left, right, operator);
+    calculatorExpression = `${formatCalculatorValue(left)} ${calculatorOperatorSymbol(operator)} ${formatCalculatorValue(right)} =`;
+    calculatorDisplayValue = result === null ? 'Error' : formatCalculatorValue(result);
+    calculatorStoredValue = null;
+    calculatorOperator = null;
+    calculatorWaiting = true;
+    updateCalculatorDisplay();
+  }
+
+  function calculatorSquareRoot() {
+    const input = Number(calculatorDisplayValue);
+    if (!Number.isFinite(input)) return;
+    calculatorExpression = `√(${formatCalculatorValue(input)}) =`;
+    if (input < 0) {
+      calculatorDisplayValue = 'Error';
+    } else {
+      calculatorDisplayValue = formatCalculatorValue(Math.sqrt(input));
+    }
+    calculatorStoredValue = null;
+    calculatorOperator = null;
+    calculatorWaiting = true;
+    updateCalculatorDisplay();
+  }
+
+  function calculatorPercent() {
+    const value = Number(calculatorDisplayValue);
+    if (!Number.isFinite(value)) return;
+    const percentValue = calculatorOperator && ['+', '-'].includes(calculatorOperator) && calculatorStoredValue !== null
+      ? calculatorStoredValue * value / 100
+      : value / 100;
+    calculatorExpression = `${formatCalculatorValue(value)}%`;
+    calculatorDisplayValue = formatCalculatorValue(percentValue);
+    calculatorWaiting = false;
+    updateCalculatorDisplay();
+  }
+
+  function calculatorToggleSign() {
+    const value = Number(calculatorDisplayValue);
+    if (!Number.isFinite(value) || value === 0) return;
+    calculatorDisplayValue = formatCalculatorValue(-value);
+    if (calculatorOperator && calculatorStoredValue !== null) {
+      calculatorExpression = `${formatCalculatorValue(calculatorStoredValue)} ${calculatorOperatorSymbol(calculatorOperator)} ${calculatorDisplayValue}`;
+    }
+    calculatorWaiting = false;
+    updateCalculatorDisplay();
+  }
+
+  function calculatorBackspace() {
+    if (calculatorWaiting || calculatorDisplayValue === 'Error') {
+      calculatorDisplayValue = '0';
+      calculatorWaiting = false;
+    } else {
+      calculatorDisplayValue = calculatorDisplayValue.slice(0, -1);
+      if (!calculatorDisplayValue || calculatorDisplayValue === '-') calculatorDisplayValue = '0';
+    }
+    updateCalculatorDisplay();
+  }
+
+  function toggleCalculator(forceOpen) {
+    const backdrop = $('calculatorBackdrop');
+    const open = typeof forceOpen === 'boolean' ? forceOpen : backdrop.classList.contains('hidden');
+    if (open) {
+      calculatorReturnFocus = document.activeElement;
+      backdrop.classList.remove('hidden');
+      backdrop.setAttribute('aria-hidden', 'false');
+      $('calculatorDisplay').focus();
+    } else {
+      backdrop.classList.add('hidden');
+      backdrop.setAttribute('aria-hidden', 'true');
+      if (calculatorReturnFocus && calculatorReturnFocus.isConnected) calculatorReturnFocus.focus();
+    }
+  }
+
+  document.addEventListener('keydown', event => {
+    if ($('calculatorBackdrop').classList.contains('hidden')) return;
+    if (/^[0-9]$/.test(event.key)) calculatorInput(event.key);
+    else if (event.key === '.') calculatorDecimal();
+    else if (['+', '-', '*', '/'].includes(event.key)) calculatorSetOperator(event.key);
+    else if (event.key === '%') calculatorPercent();
+    else if (event.key.toLowerCase() === 'r') calculatorSquareRoot();
+    else if (event.key === 'Enter' || event.key === '=') calculatorEquals();
+    else if (event.key === 'Backspace') calculatorBackspace();
+    else if (event.key === 'Delete') calculatorClear();
+    else if (event.key === 'Escape') toggleCalculator(false);
+    else return;
+    event.preventDefault();
+  });
+
+  document.addEventListener('keydown', event => {
+    if (event.key !== 'Enter' || event.repeat || $('quizBox').classList.contains('hidden')) return;
+    if (!$('calculatorBackdrop').classList.contains('hidden') || !$('chatPanel').classList.contains('hidden')) return;
+    const target = event.target instanceof Element ? event.target : null;
+    if (target && target.closest('button:not(.option), input, textarea, select, a, [contenteditable="true"]')) return;
+    if (target && target.closest('.option') && answers[current] === null) return;
+    event.preventDefault();
+    nextQuestion();
+  });
+
+  showStart();
+</script>
+</body>
+</html>
